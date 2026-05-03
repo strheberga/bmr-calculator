@@ -1,48 +1,64 @@
-function calculateAll() {
-    // Inputlardan değerleri al ve sayıya çevir
+function calculatePerformance() {
     const gender = document.getElementById('gender').value;
     const age = Number(document.getElementById('age').value);
     const height = Number(document.getElementById('height').value);
     const weight = Number(document.getElementById('weight').value);
-    const steps = Number(document.getElementById('steps').value) || 0;
+    const steps = Number(document.getElementById('steps').value);
+    const goalAdjustment = Number(document.getElementById('goal').value);
     
-    const resultDiv = document.getElementById('result');
+    if (!age || !height || !weight) return;
 
-    // Temel veri kontrolü
-    if (age <= 0 || height <= 0 || weight <= 0) {
-        resultDiv.innerHTML = "<p style='color:red;'>Lütfen geçerli yaş, boy ve kilo girin.</p>";
-        return;
-    }
+    // 1. Bilimsel BMR (Bazal Metabolizma)
+    let bmr = (gender === 'male') 
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5 
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
 
-    // 1. BMR Hesaplama
-    let bmr = 0;
-    if (gender === 'male') {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-    } else {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-    }
+    // 2. NEAT (Adım Kalorisi) - Kilo ve hareket eksenli
+    const neat = weight * steps * 0.00055;
 
-    // 2. Adım Kalorisi Hesaplama
-    // Kilo başına harcanan enerji katsayısını kullanıyoruz
-    const stepCalories = weight * steps * 0.0005;
+    // 3. TDEE ve Hedef Kalori
+    const maintenance = bmr + neat;
+    const targetKcal = maintenance - goalAdjustment;
 
-    // 3. Toplam (BMR + Adım Kalorisi)
-    // Burada matematiksel toplama yapıldığından emin oluyoruz
-    const totalMaintenance = bmr + stepCalories;
+    // 4. Makro Dağılımı (Hipertrofi Odaklı: 2.2g Protein)
+    const proteinG = weight * 2.2; 
+    const fatG = weight * 0.8;
+    const carbG = (targetKcal - (proteinG * 4) - (fatG * 9)) / 4;
 
-    // Sonucu ekrana bas
-    resultDiv.innerHTML = `
-        <div style="margin-bottom: 10px;">
-            <span>Bazal Metabolizma:</span> 
-            <span style="float:right;"><strong>${bmr.toFixed(0)} kcal</strong></span>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <span>Adım Aktivitesi (${steps.toLocaleString()} adım):</span> 
-            <span style="float:right; color: #1a73e8;"><strong>+${stepCalories.toFixed(0)} kcal</strong></span>
-        </div>
-        <div class="total-kcal" style="border-top: 2px solid #ddd; padding-top: 10px; margin-top: 10px; text-align: center;">
-            <div style="font-size: 0.9em; color: #666;">Günlük Toplam İhtiyaç</div>
-            <div style="font-size: 1.5em; color: #28a745;"><strong>${totalMaintenance.toFixed(0)} kcal</strong></div>
+    document.getElementById('result').innerHTML = `
+        <div class="res-box">
+            <div class="metric-card">
+                <label>Günlük Metabolik Durum</label>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>BMR: ${bmr.toFixed(0)} kcal</span>
+                    <span>Aktivite: +${neat.toFixed(0)} kcal</span>
+                </div>
+            </div>
+
+            <div class="metric-card" style="border-left-color: #38bdf8; text-align:center;">
+                <label>Hedef Günlük Kalori Alımı</label>
+                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${targetKcal.toFixed(0)}</div>
+                <small style="color:#94a3b8;">Haftalık Beklenen Değişim: ${((goalAdjustment * 7) / 7700).toFixed(2)} kg</small>
+            </div>
+
+            <div class="macro-box">
+                <div class="macro-card">
+                    <span>PROTEİN</span>
+                    <strong style="color:var(--primary);">${proteinG.toFixed(0)}g</strong>
+                </div>
+                <div class="macro-card">
+                    <span>KARB.</span>
+                    <strong>${carbG.toFixed(0)}g</strong>
+                </div>
+                <div class="macro-card">
+                    <span>YAĞ</span>
+                    <strong>${fatG.toFixed(0)}g</strong>
+                </div>
+            </div>
+            
+            <div style="margin-top:15px; font-size:11px; color:#64748b; text-align:center;">
+                *Pelland 2024 Hipertrofi Standartları Uygulanmıştır.
+            </div>
         </div>
     `;
 }
