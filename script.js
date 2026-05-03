@@ -1,37 +1,48 @@
 function calculateAll() {
-    // Verileri çekme
+    // Inputlardan değerleri al ve sayıya çevir
     const gender = document.getElementById('gender').value;
-    const age = parseFloat(document.getElementById('age').value);
-    const height = parseFloat(document.getElementById('height').value);
-    const weight = parseFloat(document.getElementById('weight').value);
-    const steps = parseFloat(document.getElementById('steps').value) || 0;
+    const age = Number(document.getElementById('age').value);
+    const height = Number(document.getElementById('height').value);
+    const weight = Number(document.getElementById('weight').value);
+    const steps = Number(document.getElementById('steps').value) || 0;
+    
     const resultDiv = document.getElementById('result');
 
-    // Boş alan kontrolü
-    if (!age || !height || !weight) {
-        resultDiv.innerHTML = "<p style='color:red;'>Lütfen yaş, boy ve kilo alanlarını doldurun.</p>";
+    // Temel veri kontrolü
+    if (age <= 0 || height <= 0 || weight <= 0) {
+        resultDiv.innerHTML = "<p style='color:red;'>Lütfen geçerli yaş, boy ve kilo girin.</p>";
         return;
     }
 
-    // 1. BMR Hesaplama (Mifflin-St Jeor)
-    let bmr;
+    // 1. BMR Hesaplama
+    let bmr = 0;
     if (gender === 'male') {
         bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
     } else {
         bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
     }
 
-    // 2. Adım Kalorisi (Kilo * Adım * 0.0005)
-    // Bu formül kişinin kilosuna göre adım başı yaktığı enerjiyi tahmin eder.
+    // 2. Adım Kalorisi Hesaplama
+    // Kilo başına harcanan enerji katsayısını kullanıyoruz
     const stepCalories = weight * steps * 0.0005;
 
-    // 3. Toplam
-    const total = bmr + stepCalories;
+    // 3. Toplam (BMR + Adım Kalorisi)
+    // Burada matematiksel toplama yapıldığından emin oluyoruz
+    const totalMaintenance = bmr + stepCalories;
 
-    // Sonuçları ekrana yazdırma
+    // Sonucu ekrana bas
     resultDiv.innerHTML = `
-        <div><strong>Bazal Metabolizma:</strong> ${bmr.toFixed(0)} kcal</div>
-        <div><strong>Adım Aktivitesi:</strong> +${stepCalories.toFixed(0)} kcal</div>
-        <div class="total-kcal">Günlük Tahmini İhtiyaç: ${total.toFixed(0)} kcal</div>
+        <div style="margin-bottom: 10px;">
+            <span>Bazal Metabolizma:</span> 
+            <span style="float:right;"><strong>${bmr.toFixed(0)} kcal</strong></span>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <span>Adım Aktivitesi (${steps.toLocaleString()} adım):</span> 
+            <span style="float:right; color: #1a73e8;"><strong>+${stepCalories.toFixed(0)} kcal</strong></span>
+        </div>
+        <div class="total-kcal" style="border-top: 2px solid #ddd; padding-top: 10px; margin-top: 10px; text-align: center;">
+            <div style="font-size: 0.9em; color: #666;">Günlük Toplam İhtiyaç</div>
+            <div style="font-size: 1.5em; color: #28a745;"><strong>${totalMaintenance.toFixed(0)} kcal</strong></div>
+        </div>
     `;
 }
