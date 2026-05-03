@@ -2,12 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>BMR Hesaplayıcı</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMR & Aktivite Hesaplayıcı</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h2>BMR Hesaplama</h2>
+        <h2>BMR & Kalori Hesaplama</h2>
+        
         <div class="input-group">
             <label>Cinsiyet:</label>
             <select id="gender">
@@ -15,24 +17,29 @@
                 <option value="female">Kadın</option>
             </select>
         </div>
+
         <div class="input-group">
             <label>Yaş:</label>
             <input type="number" id="age" placeholder="Örn: 25">
         </div>
+
         <div class="input-group">
             <label>Boy (cm):</label>
             <input type="number" id="height" placeholder="Örn: 177">
         </div>
+
         <div class="input-group">
             <label>Kilo (kg):</label>
             <input type="number" id="weight" placeholder="Örn: 90">
         </div>
-        <!-- Kilo girişinden hemen sonra ekle -->
-<div class="input-group">
-    <label>Günlük Adım Sayısı:</label>
-    <input type="number" id="steps" placeholder="Örn: 10000">
-</div>
-        <button onclick="calculateBMR()">Hesapla</button>
+
+        <div class="input-group">
+            <label>Günlük Adım Sayısı:</label>
+            <input type="number" id="steps" placeholder="Örn: 10000">
+        </div>
+
+        <button onclick="calculateAll()">Hesapla</button>
+
         <div id="result"></div>
     </div>
     <script src="script.js"></script>
